@@ -36,7 +36,7 @@ fi
 # Check 3: Check if process is stuck (optional - memory check)
 if [ $RESTART_NEEDED -eq 0 ]; then
     MEM_KB=$(ps -o rss= -C dnstt-server 2>/dev/null | head -1 | tr -d ' ')
-    if [ -n "$MEM_KB" ] && [ "$MEM_KB" -gt 300000 ]; then  # > 300MB
+    if [ -n "$MEM_KB" ] && [ "$MEM_KB" -gt 100000 ]; then  # > 100MB (for 512MB VPS)
         RESTART_NEEDED=1
         REASON="Memory too high: ${MEM_KB}KB"
     fi
