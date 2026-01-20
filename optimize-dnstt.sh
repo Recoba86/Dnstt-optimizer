@@ -37,10 +37,13 @@ fi
 log "Checking UDP tuning..."
 grep -q "DNSTT UDP tuning" /etc/sysctl.conf || cat <<EOF >> /etc/sysctl.conf
 
-# DNSTT UDP tuning
-net.core.rmem_max=26214400
-net.core.wmem_max=26214400
-net.ipv4.udp_mem=65536 131072 262144
+# DNSTT UDP tuning (optimized for limited connections)
+net.core.rmem_max=4194304
+net.core.wmem_max=4194304
+net.core.rmem_default=1048576
+net.core.wmem_default=1048576
+net.ipv4.udp_mem=32768 65536 131072
+net.core.netdev_max_backlog=5000
 EOF
 sysctl -p >/dev/null
 
@@ -95,9 +98,9 @@ fi
 
 ### SSH tuning (safe)
 if [ -n "$SSH_SERVICE" ]; then
-  log "Applying SSH MaxSessions (10)"
+  log "Applying SSH MaxSessions (30)"
   grep -q "^MaxSessions" /etc/ssh/sshd_config \
-    || echo "MaxSessions 10" >> /etc/ssh/sshd_config
+    || echo "MaxSessions 30" >> /etc/ssh/sshd_config
   systemctl reload "$SSH_SERVICE" || true
 fi
 
